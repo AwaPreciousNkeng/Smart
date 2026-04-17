@@ -25,7 +25,10 @@ public class User implements UserDetails {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    private String name;
+    private String firstName;
+
+    private String lastName;
+
     @Column(unique = true, nullable = false)
     private String email;
 
@@ -44,6 +47,9 @@ public class User implements UserDetails {
     private String resetPasswordCode;
     private LocalDateTime resetPasswordCodeExpiry;
 
+    @Column(updatable = false)
+    private LocalDateTime createdAt;
+
     @Override
     public @NonNull Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of(new SimpleGrantedAuthority("ROLE_" + role.name()));
@@ -57,5 +63,9 @@ public class User implements UserDetails {
     @Override
     public @NonNull String getUsername() {
         return email;
+    }
+
+    public String getFullName() {
+        return firstName + " " + lastName;
     }
 }

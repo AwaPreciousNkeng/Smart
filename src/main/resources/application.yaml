@@ -27,7 +27,7 @@ application:
       media-output-path: ./uploads
   security:
     jwt:
-      secret:
+      secret: Rk0SJE6IHiSdzTJuuApaXRpGpk9oHoWRZ6jgasWm3Mg=
       expiration: 86400000 #1 day
       refresh-token:
         expiration: 604800000 # 7 days
