@@ -1,14 +1,17 @@
 package com.codewithpcodes.smart.user;
 
 import com.codewithpcodes.smart.token.Token;
+import com.codewithpcodes.smart.vehicle.Vehicle;
 import jakarta.persistence.*;
 import lombok.*;
 import org.jspecify.annotations.Nullable;
+import org.springframework.data.annotation.CreatedDate;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -35,9 +38,21 @@ public class User implements UserDetails {
     @Column(nullable = false)
     private String password;
 
+    private String nationalId;
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private Role role;
+
+    @Enumerated(EnumType.STRING)
+    @Builder.Default
+    private Language language = Language.ENGLISH;
+
+    @Enumerated(EnumType.STRING)
+    private Gender gender;
+
+    @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL)
+    private List<Vehicle> vehicles = new ArrayList<>();
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<Token> tokens;
@@ -47,7 +62,7 @@ public class User implements UserDetails {
     private String resetPasswordCode;
     private LocalDateTime resetPasswordCodeExpiry;
 
-    @Column(updatable = false)
+    @CreatedDate
     private LocalDateTime createdAt;
 
     @Override
@@ -67,5 +82,9 @@ public class User implements UserDetails {
 
     public String getFullName() {
         return firstName + " " + lastName;
+    }
+
+    public String getFull() {
+        return null;
     }
 }

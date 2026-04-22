@@ -1,9 +1,26 @@
 services:
   postgres:
-    image: 'postgres:latest'
+    image: timescale/timescaledb-ha:pg16
+    container_name: 'smart_postgres'
+    restart: unless-stopped
     environment:
-      - 'POSTGRES_DB=mydatabase'
-      - 'POSTGRES_PASSWORD=secret'
-      - 'POSTGRES_USER=myuser'
+      - 'POSTGRES_DB=smart_db'
+      - 'POSTGRES_PASSWORD=pcodes'
+      - 'POSTGRES_USER=pcodes'
     ports:
-      - '5432'
+      - '5432:5432'
+    volumes:
+      - postgres_data:/var/lib/postgresql/
+
+  redis:
+    image: redis
+    container_name: smart_redis
+    restart: unless-stopped
+    command: redis-server --requirepass smart_redis_pass --appendonly yes
+    ports:
+      - "6379:6379"
+    volumes:
+      - smart_redisdata:/data
+volumes:
+  postgres_data:
+  smart_redisdata:
