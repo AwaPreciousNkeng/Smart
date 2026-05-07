@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 @Service
 @RequiredArgsConstructor
@@ -33,6 +34,9 @@ public class AuthenticationService {
     private final TokenRepository tokenRepository;
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
+
+    private static final int MAX_ATTEMPTS = 5;
+    private static final int LOCK_DURATION = 15;
 
     public void Register(RegisterRequest request) {
         String defaultProfilePicture = "https://ui-avatars.com/api?name=" +
@@ -58,7 +62,10 @@ public class AuthenticationService {
     }
 
     public AuthenticationResponse authenticate(AuthenticationRequest request) {
+        User user = userRepository.findByEmail(request.email())
+                .orElseThrow(() -> new IllegalArgumentException("Invalid email or password!"));
 
+        checkLockOut(user);
         try {
             authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(
@@ -67,13 +74,22 @@ public class AuthenticationService {
                     )
             );
         } catch (Exception e) {
+            handleFailedAttempts(user);
+            int remainingAttempts = MAX_ATTEMPTS - user.getFailedLoginAttempts();
+
+            if (remainingAttempts <= 0) {
+                throw new IllegalArgumentException("Account locked due to too many failed attempts. " +
+                        "Try again in " + LOCK_DURATION + " minutes."
+                );
+            }
             log.error("Authentication failed: {}", e.getMessage());
-            throw new RuntimeException("Authentication failed. Invalid Credentials: " + e);
+            throw new IllegalArgumentException(
+                    "Invalid email or password. " +
+                            remainingAttempts + " attempt(s) remaining."
+            );
         }
 
-        User user = userRepository.findByEmail(request.email())
-                .orElseThrow(() -> new IllegalArgumentException("User not found with email: " + request.email()));
-
+        resetFailedAttempts(user);
         var accessToken = jwtService.generateToken(user);
         var refreshToken = jwtService.generateRefreshToken(user);
 
@@ -173,5 +189,36 @@ public class AuthenticationService {
                 .revoked(false)
                 .build();
         tokenRepository.save(token);
+    }
+
+    private void checkLockOut(User user) {
+        if (!user.isAccountLocked()) return;
+
+        if (user.getLockedUntil() != null && LocalDateTime.now().isAfter(user.getLockedUntil())) {
+            resetFailedAttempts(user);
+            return;
+        }
+
+        DateTimeFormatter fmt = DateTimeFormatter.ofPattern("HH:mm:ss");
+        String unlockTime = user.getLockedUntil() != null ? user.getLockedUntil().format(fmt) : "Soon";
+        throw new IllegalArgumentException("Account Locked due to too many failed attempts. " +
+                "Try again after " + unlockTime);
+    }
+
+    private void handleFailedAttempts(User user) {
+        int attempts = user.getFailedLoginAttempts() + 1;
+        user.setFailedLoginAttempts(attempts);
+        if (attempts >= MAX_ATTEMPTS) {
+            user.setAccountLocked(true);
+            user.setLockedUntil(LocalDateTime.now().plusMinutes(LOCK_DURATION));
+        }
+        userRepository.save(user);
+    }
+
+    private void resetFailedAttempts(User user) {
+        user.setFailedLoginAttempts(0);
+        user.setAccountLocked(false);
+        user.setLockedUntil(null);
+        userRepository.save(user);
     }
 }

@@ -44,6 +44,13 @@ public class User implements UserDetails {
     @Column(nullable = false)
     private Role role;
 
+    @Builder.Default
+    private int failedLoginAttempts = 0;
+
+    @Builder.Default
+    private boolean accountLocked = false;
+    private LocalDateTime lockedUntil;
+
     @Enumerated(EnumType.STRING)
     @Builder.Default
     private Language language = Language.ENGLISH;

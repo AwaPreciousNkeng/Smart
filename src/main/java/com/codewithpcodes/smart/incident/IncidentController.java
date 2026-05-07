@@ -32,13 +32,13 @@ public class IncidentController {
     }
 
     @GetMapping
-    @PreAuthorize("hasAnyRole('TRAFFIC_OFFICER', 'MINISTRY')")
+    @PreAuthorize("hasAnyRole('TRAFFIC_OFFICER', 'MINISTRY', 'ADMIN')")
     public ResponseEntity<List<IncidentResponse>> getAllActiveIncidents() {
         return ResponseEntity.ok(incidentService.getAllActive());
     }
 
     @GetMapping("/nearby")
-    @PreAuthorize("hasRole('TRAFFIC_OFFICER')")
+    @PreAuthorize("hasAnyRole('TRAFFIC_OFFICER', 'ADMIN')")
     public ResponseEntity<List<IncidentResponse>> getNearbyIncidents(
             @RequestParam("lat") double lat,
             @RequestParam("lon") double lon,
@@ -55,10 +55,18 @@ public class IncidentController {
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasAnyRole('TRAFFIC_OFFICER', 'MINISTRY', 'ADMIN')")
     public ResponseEntity<IncidentResponse> getIncidentById(
             @PathVariable Long id
     ) {
         return ResponseEntity.ok(incidentService.getById(id));
     }
 
+    @PatchMapping("/update")
+    @PreAuthorize("hasRole('TRAFFIC_OFFICER')")
+    public ResponseEntity<IncidentResponse> updateIncidentStatus(
+            @Valid @RequestBody UpdateIncidentRequest request
+    ) {
+        return ResponseEntity.ok(incidentService.updateStatus(request));
+    }
 }
