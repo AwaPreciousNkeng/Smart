@@ -61,6 +61,7 @@ public class AuthenticationService {
         User savedUser = userRepository.save(user);
     }
 
+
     public AuthenticationResponse authenticate(AuthenticationRequest request) {
         User user = userRepository.findByEmail(request.email())
                 .orElseThrow(() -> new IllegalArgumentException("Invalid email or password!"));
