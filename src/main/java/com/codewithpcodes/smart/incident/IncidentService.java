@@ -1,15 +1,20 @@
 package com.codewithpcodes.smart.incident;
 
+import com.codewithpcodes.smart.file.FileService;
 import com.codewithpcodes.smart.road.RoadSegmentRepository;
 import com.codewithpcodes.smart.seed.NominatimService;
 import com.codewithpcodes.smart.user.User;
 import com.codewithpcodes.smart.user.UserRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -22,8 +27,15 @@ public class IncidentService {
     private final UserRepository userRepository;
     private final GeometryFactory geometryFactory;
     private final NominatimService nominatimService;
+    private final FileService fileService;
 
-    public IncidentResponse reportIncident(CreateIncidentRequest request, User currentUser) {
+    @Transactional
+    public IncidentResponse reportIncident(
+            CreateIncidentRequest request,
+            List<MultipartFile> images,
+            List<MultipartFile> videos,
+            User currentUser
+    ) {
         Incident incident = Incident.builder()
                 .location(geometryFactory.createPoint(new Coordinate(request.lon(), request.lat())))
                 .type(request.type())
@@ -36,7 +48,43 @@ public class IncidentService {
                 .segment(roadSegmentRepository.findNearestToPoint(request.lat(), request.lon())
                         .orElse(null))
                 .build();
-        return IncidentResponse.fromIncident(incidentRepository.save(incident));
+        Incident savedIncident = incidentRepository.save(incident);
+
+        List<IncidentMedia> mediaList = new ArrayList<>();
+
+        if (images != null && !images.isEmpty()) {
+            List<String> imagePaths = fileService.saveIncidentImages(images, savedIncident.getId());
+            List<IncidentMedia> imageMedia =
+                    imagePaths.stream()
+                            .map(path -> IncidentMedia.builder()
+                                    .filePath(path)
+                                    .mediaType(MediaType.IMAGE)
+                                    .uploadedAt(Instant.now())
+                                    .incident(savedIncident)
+                                    .build()
+                            )
+                            .toList();
+            mediaList.addAll(imageMedia);
+        }
+
+        if (videos != null && !videos.isEmpty()) {
+            List<String> videoPaths = fileService.saveIncidentVideos(videos, savedIncident.getId());
+            List<IncidentMedia> videoMedia =
+                    videoPaths.stream()
+                            .map(path -> IncidentMedia.builder()
+                                    .filePath(path)
+                                    .mediaType(MediaType.VIDEO)
+                                    .uploadedAt(Instant.now())
+                                    .incident(savedIncident)
+                                    .build()
+                            )
+                            .toList();
+            mediaList.addAll(videoMedia);
+        }
+
+        savedIncident.setMedia(mediaList);
+        incidentRepository.save(savedIncident);
+        return IncidentResponse.fromIncident(savedIncident);
     }
 
     public List<IncidentResponse> getAllActive() {

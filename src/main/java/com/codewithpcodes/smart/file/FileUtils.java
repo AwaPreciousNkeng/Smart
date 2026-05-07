@@ -14,15 +14,22 @@ public class FileUtils {
     private FileUtils() {}
 
     public static byte[] readFileFromLocation(String fileUrl) {
+
         if (StringUtils.isBlank(fileUrl)) {
             return new byte[0];
         }
+
         try {
+
             Path file = new File(fileUrl).toPath();
+            if (!Files.exists(file)) {
+                log.warn("File does not exist at path {}", fileUrl);
+                return new byte[0];
+            }
             return Files.readAllBytes(file);
         } catch (IOException e) {
-            log.warn("No file found in the path {}", fileUrl);
+            log.error("Failed to read file from path {}", fileUrl, e);
+            return new byte[0];
         }
-        return new byte[0];
     }
 }

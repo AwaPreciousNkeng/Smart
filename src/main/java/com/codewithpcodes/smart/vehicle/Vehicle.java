@@ -29,6 +29,9 @@ public class Vehicle {
     private String model;
 
     @Enumerated(EnumType.STRING)
+    private VehicleStatus status;
+
+    @Enumerated(EnumType.STRING)
     private VehicleCategory vehicleCategory;
 
     @Column(columnDefinition = "geometry(Point, 4326)")

@@ -33,6 +33,13 @@ public class Incident {
     @Enumerated(EnumType.STRING)
     private IncidentType type;
 
+    @OneToMany(
+            mappedBy = "incident",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true
+    )
+    private List<IncidentMedia> media = new ArrayList<>();
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private IncidentStatus status = IncidentStatus.OPEN;

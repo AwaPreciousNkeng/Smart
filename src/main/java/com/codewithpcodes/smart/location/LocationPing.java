@@ -2,10 +2,7 @@ package com.codewithpcodes.smart.location;
 
 import com.codewithpcodes.smart.vehicle.Vehicle;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.time.Instant;
 
@@ -13,15 +10,20 @@ import java.time.Instant;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 @Entity
-@Table(name = "location_ping")
+@Table(name = "location_ping", indexes = {
+        @Index(name = "idx_location_ping_vehicle_time",
+                columnList = "vehicle_id, time DESC")
+})
+
 public class LocationPing {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
+    @Column(nullable = false, columnDefinition = "TIMESTAMPTZ")
     private Instant time;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -35,4 +37,6 @@ public class LocationPing {
     private Double lon;
 
     private Double speedKmh;
+    private Double heading;
+    private Double accuracy;
 }
