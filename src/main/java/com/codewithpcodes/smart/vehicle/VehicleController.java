@@ -3,6 +3,7 @@ package com.codewithpcodes.smart.vehicle;
 import com.codewithpcodes.smart.location.LocationPingRequest;
 import com.codewithpcodes.smart.location.LocationPingResponse;
 import com.codewithpcodes.smart.user.User;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -19,6 +20,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/v1/vehicles")
 @RequiredArgsConstructor
+@Tag(name = "Vehicle Management", description = "Vehicle Management Endpoints")
 public class VehicleController {
 
     private final VehicleService vehicleService;

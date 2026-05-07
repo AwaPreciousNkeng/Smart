@@ -5,10 +5,12 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -21,14 +23,16 @@ public class IncidentController {
     private final IncidentService incidentService;
 
 
-    @PostMapping
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<IncidentResponse> reportIncident(
             @Valid @RequestBody CreateIncidentRequest request,
+            @RequestPart(name = "images", required = false) List<MultipartFile> images,
+            @RequestPart(name = "videos", required = false) List<MultipartFile> videos,
             @AuthenticationPrincipal User currentUser
     ) {
         return ResponseEntity
                 .status(HttpStatus.CREATED)
-                .body(incidentService.reportIncident(request, currentUser));
+                .body(incidentService.reportIncident(request,images, videos, currentUser));
     }
 
     @GetMapping
