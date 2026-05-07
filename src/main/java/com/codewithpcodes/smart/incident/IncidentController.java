@@ -1,0 +1,64 @@
+package com.codewithpcodes.smart.incident;
+
+import com.codewithpcodes.smart.user.User;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+@RestController
+@RequestMapping("/api/v1/incidents")
+@RequiredArgsConstructor
+@Tag(name = "Incident Management", description = "Incident Management Endpoints")
+public class IncidentController {
+
+    private final IncidentService incidentService;
+
+
+    @PostMapping
+    public ResponseEntity<IncidentResponse> reportIncident(
+            @Valid @RequestBody CreateIncidentRequest request,
+            @AuthenticationPrincipal User currentUser
+    ) {
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(incidentService.reportIncident(request, currentUser));
+    }
+
+    @GetMapping
+    @PreAuthorize("hasAnyRole('TRAFFIC_OFFICER', 'MINISTRY')")
+    public ResponseEntity<List<IncidentResponse>> getAllActiveIncidents() {
+        return ResponseEntity.ok(incidentService.getAllActive());
+    }
+
+    @GetMapping("/nearby")
+    @PreAuthorize("hasRole('TRAFFIC_OFFICER')")
+    public ResponseEntity<List<IncidentResponse>> getNearbyIncidents(
+            @RequestParam("lat") double lat,
+            @RequestParam("lon") double lon,
+            @RequestParam(defaultValue = "5000") double radius
+    ) {
+        return ResponseEntity.ok(incidentService.getNearBy(lat, lon, radius));
+    }
+
+    @GetMapping("/my-reported")
+    public ResponseEntity<List<IncidentResponse>> getMyReportedIncidents(
+            @AuthenticationPrincipal User currentUser
+    ) {
+        return ResponseEntity.ok(incidentService.getMyReported(currentUser.getId()));
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<IncidentResponse> getIncidentById(
+            @PathVariable Long id
+    ) {
+        return ResponseEntity.ok(incidentService.getById(id));
+    }
+
+}

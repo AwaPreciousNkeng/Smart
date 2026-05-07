@@ -23,4 +23,5 @@ public interface IncidentRepository extends JpaRepository<Incident, Long> {
             @Param("lon") double lon,
             @Param("radiusMetres") double radiusMetres
     );
+
 }
