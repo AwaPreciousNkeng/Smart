@@ -90,8 +90,4 @@ public class User implements UserDetails {
     public String getFullName() {
         return firstName + " " + lastName;
     }
-
-    public String getFull() {
-        return null;
-    }
 }

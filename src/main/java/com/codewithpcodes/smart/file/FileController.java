@@ -91,16 +91,4 @@ public class FileController {
                 )
                 .body(file);
     }
-
-    @PostMapping(
-            value = "/users/{userId}/profile-pictures",
-            consumes = MediaType.MULTIPART_FORM_DATA_VALUE
-    )
-    public ResponseEntity<List<String>> uploadProfilePictures(
-            @PathVariable Integer userId,
-            @RequestParam("files") List<MultipartFile> files
-    ) {
-        List<String> uploadedFiles = fileService.saveProfilePictures(files, userId);
-        return ResponseEntity.ok(uploadedFiles);
-    }
 }
