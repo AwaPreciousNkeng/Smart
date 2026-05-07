@@ -9,7 +9,7 @@ public record CreateIncidentRequest(
         Double lon,
         IncidentType type,
         Severity severity,
-        String description,
+        String description
 
 ) {
 }

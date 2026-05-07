@@ -12,10 +12,13 @@ import java.time.Instant;
 @NoArgsConstructor
 @Builder
 @Entity
-@Table(name = "location_ping", indexes = {
-        @Index(name = "idx_location_ping_vehicle_time",
-                columnList = "vehicle_id, time DESC")
-})
+@Table(
+        name = "location_ping",
+        indexes = {
+                @Index(name = "idx_location_ping_vehicle_time",
+                        columnList = "vehicle_id, time")
+        }
+)
 
 public class LocationPing {
 
@@ -23,7 +26,7 @@ public class LocationPing {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, columnDefinition = "TIMESTAMPTZ")
+    @Column(name = "time", nullable = false)
     private Instant time;
 
     @ManyToOne(fetch = FetchType.LAZY)

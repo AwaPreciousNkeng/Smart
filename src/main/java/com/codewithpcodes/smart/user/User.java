@@ -45,10 +45,12 @@ public class User implements UserDetails {
     private Role role;
 
     @Builder.Default
-    private int failedLoginAttempts = 0;
+    @Column(nullable = false)
+    private boolean accountLocked = false;
 
     @Builder.Default
-    private boolean accountLocked = false;
+    @Column(nullable = false)
+    private int failedLoginAttempts = 0;
     private LocalDateTime lockedUntil;
 
     @Enumerated(EnumType.STRING)
