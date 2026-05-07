@@ -1,5 +1,6 @@
 package com.codewithpcodes.smart.road;
 
+import com.codewithpcodes.smart.zone.Zone;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -21,9 +22,12 @@ public interface RoadTrafficRepository extends JpaRepository<RoadTraffic, Long> 
 
     // ✅ Get traffic for a zone (via join)
     @Query("""
-            SELECT t FROM RoadTraffic t
-            JOIN t.segment r
-            WHERE r.zone.id = :zoneId
-            """)
-    List<RoadTraffic> findByZoneId(@Param("zoneId") Long zoneId);
+    SELECT t
+    FROM RoadTraffic t
+    JOIN t.segment r
+    JOIN Zone z
+        ON intersects(z.geom, r.geom) = true
+    WHERE z = :zone
+""")
+    List<RoadTraffic> findByZone(@Param("zone") Zone zone);
 }

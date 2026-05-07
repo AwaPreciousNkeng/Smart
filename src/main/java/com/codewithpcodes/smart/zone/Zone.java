@@ -32,7 +32,7 @@ public class Zone {
     @Column(name = "name_3")
     private String subDivision;
 
-    @Column(columnDefinition = "geometry(MultiPolygon, 4326)")
+    @Column(name = "geom", columnDefinition = "geometry(MultiPolygon, 4326)")
     private MultiPolygon geom;
 
 }

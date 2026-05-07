@@ -4,7 +4,6 @@ import com.codewithpcodes.smart.road.RoadSegmentRepository;
 import com.codewithpcodes.smart.seed.NominatimService;
 import com.codewithpcodes.smart.user.User;
 import com.codewithpcodes.smart.user.UserRepository;
-import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.GeometryFactory;
