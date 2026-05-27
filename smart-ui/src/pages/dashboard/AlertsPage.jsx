@@ -1,8 +1,15 @@
 import { useState } from 'react'
 import { motion } from 'framer-motion'
 import { MdNotificationsActive, MdSms, MdBroadcastOnHome, MdAdd, MdHistory } from 'react-icons/md'
-import { alerts as dummyAlerts } from '../../data/trafficData'
 import { SeverityBadge, StatusBadge, Modal } from '../../components/UIComponents'
+
+const STATIC_ALERTS = [
+  { id:1, type:'Accident Alert',  severity:'critical', status:'active',     message:'Major accident on Autoroute Douala–Yaoundé at PK50. Road partially blocked. Emergency services on site.', city:'Douala',   time:'08:32', date:'Today',  recipients:2400 },
+  { id:2, type:'Flood Warning',   severity:'high',     status:'active',     message:'Flash flooding reported at Ndokotti intersection. Avoid the area and use Wouri bridge diversion.',            city:'Douala',   time:'06:55', date:'Today',  recipients:1800 },
+  { id:3, type:'Road Closure',    severity:'medium',   status:'monitoring', message:'Boulevard de la Liberté partially closed for emergency utility works. Expect delays until 14h.',              city:'Yaoundé',  time:'07:00', date:'Today',  recipients:950  },
+  { id:4, type:'Signal Fault',    severity:'medium',   status:'monitoring', message:'Traffic signal fault at Mvog-Mbi roundabout. Manual traffic control deployed.',                               city:'Yaoundé',  time:'11:48', date:'Today',  recipients:630  },
+  { id:5, type:'Storm Warning',   severity:'high',     status:'active',     message:'METEO CAM: Heavy rainfall expected 15h–18h. Reduce speed and increase following distance.',                   city:'All Cities',time:'09:00', date:'Today', recipients:5200 },
+]
 
 const severityColor = {
   critical: 'border-l-alert-red bg-alert-red/5',
@@ -12,7 +19,7 @@ const severityColor = {
 }
 
 export default function AlertsPage() {
-  const [alerts, setAlerts] = useState(dummyAlerts)
+  const [alerts, setAlerts] = useState(STATIC_ALERTS)
   const [broadcastOpen, setBroadcastOpen] = useState(false)
   const [filter, setFilter] = useState('all')
 

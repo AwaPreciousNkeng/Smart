@@ -41,8 +41,8 @@ export default function RegisterPage() {
         <div className="glass rounded-2xl p-7">
           <form onSubmit={handleSubmit} className="space-y-4">
             {[
-              { key: 'firstName', label: 'First Name', icon: MdPerson, type: 'text', ph: 'PCodes' },
-              { key: 'lastName', label: 'Last Name', icon: MdPerson, type: 'text', ph: 'PCodes' },
+              { key: 'firstName', label: 'First Name', icon: MdPerson, type: 'text', ph: 'John' },
+              { key: 'lastName', label: 'Last Name', icon: MdPerson, type: 'text', ph: 'Doe' },
               { key: 'email', label: 'Email', icon: MdEmail, type: 'email', ph: 'pcodes@example.com' },
               { key: 'password', label: 'Password', icon: MdLock, type: 'password', ph: '••••••••' },
             ].map(({ key, label, icon: Icon, type, ph }) => (

@@ -1,9 +1,9 @@
 import { NavLink, useNavigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
-  MdDashboard, MdTraffic, MdWarning, MdDirectionsBus, MdBarChart,
-  MdFiberManualRecord, MdDirectionsCar, MdNotificationsActive,
-  MdSensors, MdPeople, MdSettings, MdLogout, MdSmartphone,
+  MdDashboard, MdTraffic, MdWarning, MdBarChart,
+  MdDirectionsCar, MdNotificationsActive,
+  MdPeople, MdSettings, MdLogout, MdSmartphone,
   MdClose, MdPsychology
 } from 'react-icons/md'
 import { useAuth } from '../context/AuthContext'
@@ -16,11 +16,6 @@ const nav = [
   ]},
   { section:'OPERATIONS', items:[
     { label:'Incidents',       icon:MdWarning,             path:'/incidents',      roles:null },
-    { label:'Traffic Lights',  icon:MdFiberManualRecord,   path:'/traffic-lights', roles:['Admin','Traffic Analyst','Traffic Warden','Enforcement Officer'] },
-    { label:'IoT Sensors',     icon:MdSensors,             path:'/sensors',        roles:['Admin','Traffic Analyst','Transport Operator'] },
-  ]},
-  { section:'TRANSPORT', items:[
-    { label:'Public Transport',icon:MdDirectionsBus,       path:'/transport',      roles:null },
     { label:'Vehicles',        icon:MdDirectionsCar,       path:'/vehicles',       roles:null },
   ]},
   { section:'SAFETY & AI', items:[
@@ -36,7 +31,7 @@ const nav = [
 
 const roleColors = {
   'Admin':'#1d4ed8','Traffic Analyst':'#15803d','Transport Operator':'#a16207',
-  'Traffic Warden':'#c2410c','Commuter':'#6d28d9','Enforcement Officer':'#b91c1c',
+  'Commuter':'#6d28d9',
 }
 
 export default function Sidebar({ open, setOpen }) {
@@ -72,7 +67,6 @@ export default function Sidebar({ open, setOpen }) {
               <MdClose size={17} />
             </button>
           </div>
-          {/* AI badge */}
           <div style={{ marginTop:8, display:'flex', alignItems:'center', gap:6, padding:'5px 8px', borderRadius:4, background:'#eff6ff', border:'1px solid #bfdbfe' }}>
             <MdPsychology size={13} color="#2563eb" />
             <span style={{ fontSize:11, fontWeight:600, color:'#1d4ed8' }}>AI-Powered Traffic Intelligence</span>
