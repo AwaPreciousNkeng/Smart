@@ -6,9 +6,9 @@ import { useAuth } from '../../context/AuthContext'
 
 const demos = [
   { role:'Admin',              email:'admin@smartroad.cm',    pw:'admin123',    color:'#1d4ed8' },
-  { role:'Traffic Analyst',   email:'analyst@smartroad.cm',  pw:'analyst123',  color:'#15803d' },
-  { role:'Transport Operator',email:'operator@smartroad.cm', pw:'operator123', color:'#a16207' },
-  { role:'Commuter',          email:'commuter@smartroad.cm', pw:'commuter123', color:'#6d28d9' },
+  { role:'Traffic Analyst',    email:'analyst@smartroad.cm',  pw:'analyst123',  color:'#15803d' },
+  { role:'Transport Operator', email:'officer@smartroad.cm',  pw:'officer123',  color:'#a16207' },
+  { role:'Commuter',           email:'commuter@smartroad.cm', pw:'commuter123', color:'#6d28d9' },
 ]
 
 export default function LoginPage() {

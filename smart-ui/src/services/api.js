@@ -2,7 +2,7 @@ import axios from 'axios'
 
 // ─── Base instance ────────────────────────────────────────────────────────────
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:5000/api',
+  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:8080/api/v1',
   timeout: 15000,
   headers: { 'Content-Type': 'application/json' },
 })
@@ -20,6 +20,7 @@ api.interceptors.response.use(
   (err) => {
     if (err.response?.status === 401) {
       localStorage.removeItem('sttms_token')
+      localStorage.removeItem('sttms_refresh_token')
       localStorage.removeItem('sttms_user')
       window.location.href = '/login'
     }
@@ -31,10 +32,12 @@ api.interceptors.response.use(
 //  AUTH
 // ════════════════════════════════════════════════════════════════════
 export const authAPI = {
-  login:          (email, password)  => api.post('/auth/login',           { email, password }),
+  login:          (email, password)  => api.post('/auth/authenticate',    { email, password }),
   register:       (data)             => api.post('/auth/register',         data),
-  getMe:          ()                 => api.get ('/auth/me'),
-  updateProfile:  (formData)         => api.put ('/auth/update-profile',   formData, { headers: { 'Content-Type': 'multipart/form-data' } }),
+  getMe:          (userId)           => api.get (`/users/${userId}`),
+  refreshToken:   ()                 => api.post('/auth/refresh-token'),
+  updateProfile:  (data)             => api.patch('/users',                data),
+  uploadAvatar:   (userId, formData) => api.post(`/users/${userId}/profile-picture`, formData, { headers: { 'Content-Type': 'multipart/form-data' } }),
   changePassword: (data)             => api.put ('/auth/change-password',  data),
 }
 
@@ -57,13 +60,12 @@ export const trafficAPI = {
 //  INCIDENTS
 // ════════════════════════════════════════════════════════════════════
 export const incidentsAPI = {
-  getAll:    (params)     => api.get('/incidents',             { params }),
-  getById:   (id)         => api.get(`/incidents/${id}`),
-  getStats:  ()           => api.get('/incidents/stats'),
-  create:    (formData)   => api.post('/incidents',            formData, { headers: { 'Content-Type': 'multipart/form-data' } }),
-  update:    (id, data)   => api.put(`/incidents/${id}`,       data),
-  resolve:   (id)         => api.patch(`/incidents/${id}/resolve`),
-  delete:    (id)         => api.delete(`/incidents/${id}`),
+  getAll:       (params)     => api.get('/incidents',             { params }),
+  getById:      (id)         => api.get(`/incidents/${id}`),
+  getNearby:    (lat, lon, radius) => api.get('/incidents/nearby', { params: { lat, lon, radius } }),
+  getMyReported:()           => api.get('/incidents/my-reported'),
+  create:       (formData)   => api.post('/incidents',            formData, { headers: { 'Content-Type': 'multipart/form-data' } }),
+  update:       (data)       => api.patch('/incidents/update',    data),
 }
 
 // ════════════════════════════════════════════════════════════════════
@@ -88,11 +90,28 @@ export const transportAPI = {
   createRoute:     (data)     => api.post('/transport',             data),
   updateRoute:     (id, data) => api.put(`/transport/${id}`,        data),
   deleteRoute:     (id)       => api.delete(`/transport/${id}`),
-  getVehicles:     (params)   => api.get('/transport/vehicles',     { params }),
-  getVehicleById:  (id)       => api.get(`/transport/vehicles/${id}`),
-  createVehicle:   (data)     => api.post('/transport/vehicles',    data),
-  updateVehicle:   (id, data) => api.put(`/transport/vehicles/${id}`, data),
-  deleteVehicle:   (id)       => api.delete(`/transport/vehicles/${id}`),
+}
+
+// ════════════════════════════════════════════════════════════════════
+//  VEHICLES  (matches backend VehicleController at /api/v1/vehicles)
+// ════════════════════════════════════════════════════════════════════
+export const vehiclesAPI = {
+  getAll:          (params)        => api.get('/vehicles',                    { params }),
+  getMyVehicles:   ()              => api.get('/vehicles/my-vehicles'),
+  create:          (data)          => api.post('/vehicles',                   data),
+  updateLocation:  (id, data)      => api.patch(`/vehicles/${id}/location`,   data),
+  getTrail:        (id, params)    => api.get(`/vehicles/${id}/trail`,        { params }),
+  updateStatus:    (id, status)    => api.patch(`/vehicles/${id}/status`,     { status }),
+}
+
+// ════════════════════════════════════════════════════════════════════
+//  ZONES  (matches backend ZoneController at /api/v1/zones)
+// ════════════════════════════════════════════════════════════════════
+export const zonesAPI = {
+  getAll:          (params)   => api.get('/zones',                { params }),
+  getByRegion:     (region)   => api.get(`/zones/${region}`),
+  getById:         (id)       => api.get(`/zones/${id}`),
+  getMap:          (id)       => api.get(`/zones/${id}/map`),
 }
 
 // ════════════════════════════════════════════════════════════════════
@@ -111,12 +130,9 @@ export const alertsAPI = {
 //  USERS
 // ════════════════════════════════════════════════════════════════════
 export const usersAPI = {
-  getAll:    (params)     => api.get('/users',            { params }),
   getById:   (id)         => api.get(`/users/${id}`),
-  getStats:  ()           => api.get('/users/stats'),
-  create:    (data)       => api.post('/users',           data),
-  update:    (id, data)   => api.put(`/users/${id}`,      data),
-  delete:    (id)         => api.delete(`/users/${id}`),
+  update:    (data)       => api.patch('/users',          data),
+  uploadPic: (id, formData) => api.post(`/users/${id}/profile-picture`, formData, { headers: { 'Content-Type': 'multipart/form-data' } }),
 }
 
 export default api

@@ -1,11 +1,11 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
-import { MdPerson, MdEmail, MdLock, MdPhone, MdShield } from 'react-icons/md'
+import { MdPerson, MdEmail, MdLock, MdShield } from 'react-icons/md'
 import { useAuth } from '../../context/AuthContext'
 
 export default function RegisterPage() {
-  const [form, setForm] = useState({ name: '', email: '', phone: '', password: '', confirm: '' })
+  const [form, setForm] = useState({ firstName: '', lastName: '', email: '', password: ''})
   const [loading, setLoading] = useState(false)
   const { register } = useAuth()
   const navigate = useNavigate()
@@ -14,12 +14,10 @@ export default function RegisterPage() {
 
   const handleSubmit = async (e) => {
     e.preventDefault()
-    if (form.password !== form.confirm) return alert('Passwords do not match')
     setLoading(true)
-    await new Promise(r => setTimeout(r, 800))
-    register(form)
+    const ok = await register(form)
     setLoading(false)
-    navigate('/dashboard')
+    if (ok) navigate('/dashboard')
   }
 
   return (
@@ -36,18 +34,17 @@ export default function RegisterPage() {
           <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-primary-600 shadow-neon mb-3">
             <MdShield size={28} className="text-white" />
           </div>
-          <h1 className="font-display font-bold text-2xl text-white">Create Account</h1>
+          <h1 className="font-display font-bold text-2xl text-blue">Create Account</h1>
           <p className="text-surface-300 text-sm mt-1">Join the STTMS platform</p>
         </div>
 
         <div className="glass rounded-2xl p-7">
           <form onSubmit={handleSubmit} className="space-y-4">
             {[
-              { key: 'name', label: 'Full Name', icon: MdPerson, type: 'text', ph: 'Jean Dupont' },
-              { key: 'email', label: 'Email', icon: MdEmail, type: 'email', ph: 'you@example.com' },
-              { key: 'phone', label: 'Phone', icon: MdPhone, type: 'tel', ph: '+237 677 000 000' },
+              { key: 'firstName', label: 'First Name', icon: MdPerson, type: 'text', ph: 'PCodes' },
+              { key: 'lastName', label: 'Last Name', icon: MdPerson, type: 'text', ph: 'PCodes' },
+              { key: 'email', label: 'Email', icon: MdEmail, type: 'email', ph: 'pcodes@example.com' },
               { key: 'password', label: 'Password', icon: MdLock, type: 'password', ph: '••••••••' },
-              { key: 'confirm', label: 'Confirm Password', icon: MdLock, type: 'password', ph: '••••••••' },
             ].map(({ key, label, icon: Icon, type, ph }) => (
               <div key={key}>
                 <label className="label-text block mb-1.5">{label}</label>
@@ -70,7 +67,7 @@ export default function RegisterPage() {
           </form>
           <p className="text-center text-xs text-surface-300 mt-5">
             Already have an account?{' '}
-            <Link to="/login" className="text-primary-400 hover:text-primary-300 transition-colors">Sign In</Link>
+            <Link to="/login" className="text-primary-700 hover:text-primary-300 transition-colors">Sign In</Link>
           </p>
         </div>
       </motion.div>

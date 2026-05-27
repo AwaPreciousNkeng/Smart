@@ -25,8 +25,8 @@ import CommuterHomePage   from './pages/commuter/CommuterHomePage'
 import CommuterReportPage from './pages/commuter/CommuterReportPage'
 import CommuterAlertsPage from './pages/commuter/CommuterAlertsPage'
 
-const ALL    = ['Admin','Traffic Analyst','Transport Operator','Traffic Warden','Commuter','Enforcement Officer']
-const STAFF  = ['Admin','Traffic Analyst','Transport Operator','Traffic Warden','Enforcement Officer']
+const ALL    = ['Admin','Traffic Analyst','Transport Operator','Commuter']
+const STAFF  = ['Admin','Traffic Analyst','Transport Operator']
 const ADMIN  = ['Admin']
 
 export default function App() {
