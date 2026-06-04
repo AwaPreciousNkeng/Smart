@@ -1,0 +1,39 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/smart_db
+    username: pcodes
+    password: pcodes
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    database: PostgreSQL
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: true
+        dialect: org.hibernate.spatial.dialect.postgis.PostgisPG10Dialect
+  data:
+    redis:
+      host: localhost
+      port: 6379
+      password: smart_redis_pass
+  servlet:
+    multipart:
+      max-file-size: 50MB
+  application:
+    name: Smart
+springdoc:
+  default-produces-media-type: application/json
+application:
+  file:
+    uploads:
+      media-output-path: ./uploads
+  security:
+    jwt:
+      secret: Rk0SJE6IHiSdzTJuuApaXRpGpk9oHoWRZ6jgasWm3Mg=
+      expiration: 86400000 #1 day
+      refresh-token:
+        expiration: 604800000 # 7 days
+
